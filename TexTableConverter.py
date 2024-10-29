@@ -1,5 +1,6 @@
 import pylightxl as xl
 import csv
+import chardet
 
 
 class TexTableConverter:
@@ -14,8 +15,12 @@ class TexTableConverter:
 
         file_type = file_path.split(".")[-1]
         if file_type == "csv":
+            encode_style = "utf-8"
             try:
-                with open(file_path, "r", newline="") as f:
+                with open(file_path, "rb") as f:
+                    encode_style = chardet.detect(f.read())["encoding"]
+
+                with open(file_path, "r", newline="", encoding=encode_style) as f:
                     reader = csv.reader(f)
                     data = [row for row in reader]
             except FileNotFoundError:
