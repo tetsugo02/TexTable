@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, scrolledtext
 from TexTableConverter import TexTableConverter
-import pyperclip
+
 import subprocess
 
 convert = TexTableConverter()
