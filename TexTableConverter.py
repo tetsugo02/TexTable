@@ -39,7 +39,7 @@ class TexTableConverter:
             self.file_path = file_path
             self.sheet_names = file.ws_names
             self.file_type = "xlsx"
-            
+
             for sheet_name in self.sheet_names:
                 # イテレータをリストに変換し、空の行・列を削除する
                 raw_data = list(file.ws(sheet_name).rows)
@@ -84,17 +84,31 @@ class TexTableConverter:
 
     def _generate_latex_table(self, data: list, format: str = "horizontal") -> str:
         table = []
+        table.append(
+            "\\begin{table}[H]\n"
+            + "   \\centering\n"
+            + "   \\caption{}\n"
+            + "   \\label{table:}"
+        )
         match format:
             case "horizontal":
                 for i, row in enumerate(data):
                     if i == 0:
-                        table.append("\\toprule")
-                        table.append(" & ".join(str(cell) for cell in row) + " \\\\")
-                        table.append("\\midrule")
+                        table.append("   " + "\\begin{tabular}{" + "c" * len(row) + "}")
+                        table.append("   " + "\\toprule")
+                        table.append(
+                            "   " + " & ".join(str(cell) for cell in row) + " \\\\"
+                        )
+                        table.append("   " + "\\midrule")
                     else:
-                        table.append(" & ".join(str(cell) for cell in row) + " \\\\")
-                table.append("\\bottomrule")
+                        table.append(
+                            "     " + " & ".join(str(cell) for cell in row) + " \\\\"
+                        )
+
+                table.append("  \\bottomrule")
+                table.append("  \\end{tabular}")
 
             case "vertical":
                 pass  # TODO これから実装
+        table.append("\\end{table}")
         return "\n".join(table)
