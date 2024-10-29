@@ -163,3 +163,8 @@ cython_debug/
 *.xlsx
 *.csv
 **/.DS_Store
+test/
+*.dist
+*.build
+*.app
+*.bin
