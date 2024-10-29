@@ -168,3 +168,4 @@ test/
 *.build
 *.app
 *.bin
+*.zip
