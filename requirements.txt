@@ -1,5 +1,0 @@
-chardet==5.2.0
-Nuitka==2.4.11
-ordered-set==4.1.0
-pylightxl==1.61
-zstandard==0.23.0
