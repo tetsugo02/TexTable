@@ -1,0 +1,1 @@
+python -m nuitka --standalone --macos-create-app-bundle --macos-app-icon="./public/icon.icns"  TexTable.py
