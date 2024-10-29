@@ -55,13 +55,20 @@ def open_file():
 
     match extension:
         case "csv":
-            latex_code = convert.convert_to_latex("CSV")
-            output_text.delete(1.0, tk.END)
-            output_text.insert(tk.END, latex_code)
-            copy_to_clipboard()
-            show_status_message("CSV file opened and copied successfully.")
+            display_csv_sheet()
         case "xlsx":
             display_sheet_buttons(filepath)
+
+
+def display_csv_sheet():
+    # 既存のボタンをクリア
+    for widget in button_frame.winfo_children():
+        widget.destroy()
+    latex_code = convert.convert_to_latex("CSV")
+    output_text.delete(1.0, tk.END)
+    output_text.insert(tk.END, latex_code)
+    copy_to_clipboard()
+    show_status_message("CSV file opened and copied successfully.")
 
 
 def display_sheet_buttons(filepath: str):
@@ -77,6 +84,8 @@ def display_sheet_buttons(filepath: str):
             text=sheet,
             command=lambda s=sheet: display_excel_sheet(filepath, s),
         )
+        # xlsxファイル開いたら、最初のシートを表示
+        display_excel_sheet(filepath, sheet_names[0])
         button.grid(row=0, column=i, padx=5, pady=5)
 
 
