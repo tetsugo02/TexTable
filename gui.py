@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import messagebox, filedialog, scrolledtext
+from tkinter import filedialog, scrolledtext
 from TexTableConverter import TexTableConverter
 import pyperclip
 
@@ -7,7 +7,7 @@ convert = TexTableConverter()
 
 
 def launch_gui() -> None:
-    global output_text, root, frame, button_frame
+    global output_text, root, frame, button_frame, status_label
     root = tk.Tk()
     root.title("LaTeX Table Converter")
 
@@ -28,6 +28,10 @@ def launch_gui() -> None:
     output_text = scrolledtext.ScrolledText(frame, wrap=tk.WORD, height=15)
     output_text.pack(expand=True, fill=tk.BOTH, pady=5)
 
+    # ステータスメッセージを表示するラベル
+    status_label = tk.Label(frame, text="", fg="green")
+    status_label.pack(pady=5)
+
     root.mainloop()
 
 
@@ -46,7 +50,7 @@ def open_file():
     try:
         convert.open_file(filepath)
     except FileNotFoundError:
-        messagebox.showerror("Error", f"File '{filepath}' not found.")
+        show_status_message(f"File '{filepath}' not found.", error=True)
         return
 
     match extension:
@@ -55,7 +59,7 @@ def open_file():
             output_text.delete(1.0, tk.END)
             output_text.insert(tk.END, latex_code)
             copy_to_clipboard()
-            messagebox.showinfo("Success", "CSV file opened successfully.")
+            show_status_message("CSV file opened and copied successfully.")
         case "xlsx":
             display_sheet_buttons(filepath)
 
@@ -81,8 +85,14 @@ def display_excel_sheet(filepath: str, sheet_name: str):
     output_text.delete(1.0, tk.END)
     output_text.insert(tk.END, latex_code)
     copy_to_clipboard()
-    
+    show_status_message(f"Sheet '{sheet_name}' copied successfully.")
 
 
 def copy_to_clipboard():
     pyperclip.copy(output_text.get(1.0, tk.END))
+
+
+def show_status_message(message: str, error: bool = False):
+    """ステータスメッセージを一時的に表示する"""
+    status_label.config(text=message, fg="red" if error else "green")
+    root.after(5000, lambda: status_label.config(text=""))  # 3秒後にメッセージを消す
