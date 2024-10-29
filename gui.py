@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import messagebox, filedialog, simpledialog, scrolledtext
-from convert_to_latex import csv_to_latex
+from TexTableConverter import TexTableConverter
 import pyperclip
 
 
-def launch_gui() -> None:
+convert = TexTableConverter()
 
+
+def launch_gui() -> None:
     root = tk.Tk()
     root.title("LaTeX Table Converter")
 
@@ -37,18 +39,20 @@ def open_file():
         return
     extension = filepath.split(".")[-1]
     try:
-        match extension:
-            case "csv":
-                latex_code = csv_to_latex(filepath)
-                output_text.delete(1.0, tk.END)
-                output_text.insert(tk.END, latex_code)
-                pyperclip.copy(latex_code)
-                messagebox.showinfo(
-                    "Success", "Latex code has been copied to clipboard"
-                )
+        convert.open_file(filepath)
+    except FileNotFoundError:
+        messagebox.showerror("Error", f"File '{filepath}' not found.")
+        return
 
-    except Exception as e:
-        messagebox.showerror("Error", str(e))
+    match extension:
+        case "csv":
+            latex_code = convert.convert_to_latex("CSV")
+            output_text.delete(1.0, tk.END)
+            output_text.insert(tk.END, latex_code)
+            copy_to_clipboard()
+            messagebox.showinfo("Success", "File opened successfully.")
+        case "xlsx":
+            pass
 
 
 def copy_to_clipboard():

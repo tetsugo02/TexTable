@@ -1,6 +1,6 @@
-from pandas import read_csv
+from TexTableConverter import TexTableConverter
 
-
+convert 
 def csv_to_latex(filepath: str) -> str:
     df = read_csv(filepath)
     df = df.dropna(how="all")
@@ -12,15 +12,11 @@ def csv_to_latex(filepath: str) -> str:
 
 
 def add_header_footer(latex_code: str) -> str:
-    begin: int = latex_code.find("\\begin{tabular}")
-    end: int = latex_code.rfind("\\end{tabular}") + len("\\end{tabular}")
-    body_code: str = latex_code[begin:end]
     entire_talbe_code: str = (
         "\\begin{table}[H]\n"
         "\\centering\n"
         "\\caption{}\n"
         "\\label{table:}\n"
-        f"{body_code}\n"
         "\\end{table}"
     )
     return entire_talbe_code
