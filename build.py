@@ -19,7 +19,6 @@ def build_command():
         "-m",
         "nuitka",
         "--standalone",  # 依存ライブラリをバンドル
-        "--enable-console",  # コンソール出力を有効化
         "--follow-imports",  # インポートをすべて追跡
         "--include-module=tkinter",  # tkinterの明示的な含有
         f"--output-dir={output_dir}",  # 出力先ディレクトリを指定
@@ -40,7 +39,7 @@ def build_command():
         icon_path = os.path.join(os.path.dirname(__file__), "public/icon.ico")
         base_command.extend(
             [
-                f"--windows-icon={icon_path}",  # Windowsのアイコン指定
+                "--enable-plugin=tk-inter",  # tkinterのプラグインを有効化
             ]
         )
     elif system == "Linux":  # Linux
