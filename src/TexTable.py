@@ -1,4 +1,5 @@
-from gui import launch_gui
+from gui import LaTeXTableConverterApp
 
 if __name__ == "__main__":
-    launch_gui()
+    latex_table_converter = LaTeXTableConverterApp()
+    latex_table_converter.run()
