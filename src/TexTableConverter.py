@@ -87,7 +87,7 @@ class TexTableConverter:
         latex_code = self._generate_latex_table(data)
         return latex_code
 
-    def _generate_latex_table(self, data: list, format: str = "vertical") -> str:
+    def _generate_latex_table(self, data: list, format: str = "horizontal") -> str:
         table = []
         table.append(
             "\\begin{table}[H]\n"

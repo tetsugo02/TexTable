@@ -1,130 +1,147 @@
 import tkinter as tk
-from tkinter import filedialog, scrolledtext
+from tkinter import filedialog, scrolledtext, ttk
 from TexTableConverter import TexTableConverter
 import subprocess
 import platform
 
 convert = TexTableConverter()
 
-
 def launch_gui() -> None:
-    global output_text, root, frame, button_frame, status_label
+    """GUIのメインウィンドウを起動"""
+    global root, output_text, status_label, worksheet_box, button_frame
+
     root = tk.Tk()
     root.title("LaTeX Table Converter")
+    root.geometry("800x600")
 
-    frame = tk.Frame(root, padx=10, pady=10)
-    frame.pack(expand=True, fill="both")
+    root_frame = create_root_frame(root)
+    create_menu_buttons(root_frame)
+    create_output_area(root_frame)
+    create_status_and_worksheet_box(root_frame)
 
-    open_button = tk.Button(frame, text="Open file", command=open_file)
-    open_button.pack(pady=10)
-
-    button_frame = tk.Frame(frame)  # 横にボタンを並べるためのフレーム
-    button_frame.pack(pady=5)
-
-    copy_button = tk.Button(
-        frame,
-        text="Copy to clipboard",
-        command=lambda: copy_to_clipboard(output_text.get(1.0, tk.END)),
-    )
-    copy_button.pack(pady=10)
-
-    output_text = scrolledtext.ScrolledText(
-        frame, wrap=tk.WORD, height=15
-    )  # 出力エリア
-    output_text.pack(expand=True, fill=tk.BOTH, pady=5)
-
-    status_label = tk.Label(frame, text="", fg="green")  # ステータスメッセージ用
-    status_label.pack(pady=5)
+    # ウィンドウサイズ変更に追従する設定
+    configure_grid(root_frame)
 
     root.mainloop()
 
+def create_root_frame(root):
+    """メインのフレームを作成"""
+    frame = tk.Frame(root, padx=10, pady=10)
+    frame.pack(expand=True, fill="both")
+    return frame
+
+def create_menu_buttons(parent):
+    """ファイル操作とコピーのボタンを作成"""
+    global button_frame
+    button_frame = tk.Frame(parent)
+    button_frame.grid(row=0, column=0, columnspan=2, pady=5)
+
+    tk.Button(button_frame, text="Open File", command=open_file).grid(row=0, column=0, padx=5)
+    tk.Button(button_frame, text="Copy to Clipboard", command=lambda: copy_to_clipboard(output_text.get(1.0, tk.END))).grid(row=0, column=1, padx=5)
+
+    tk.Label(parent, text="Select Format:").grid(row=1, column=0, sticky="w", padx=5, pady=5)
+    format_menu = ttk.Combobox(parent, values=["horizontal", "vertical"], state="readonly")
+    format_menu.set("horizontal")
+    format_menu.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+
+def create_output_area(parent):
+    """出力テキストエリアを作成"""
+    global output_text
+    output_text = scrolledtext.ScrolledText(parent, wrap=tk.WORD, height=15)
+    output_text.grid(row=2, column=0, columnspan=2, sticky="nsew", padx=5, pady=10)
+
+def create_status_and_worksheet_box(parent):
+    """ステータスラベルとシート選択ボックスを作成"""
+    global status_label, worksheet_box
+
+    status_label = tk.Label(parent, text="", fg="green")
+    status_label.grid(row=3, column=0, columnspan=2, pady=5)
+
+    worksheet_box = tk.Frame(parent)
+    worksheet_box.grid(row=4, column=0, columnspan=2, sticky="nsew", padx=5, pady=5)
+
+def configure_grid(parent):
+    """ウィンドウ拡大時のリサイズ設定"""
+    parent.grid_rowconfigure(2, weight=1)  # テキストエリアの行を拡大
+    parent.grid_rowconfigure(4, weight=1)  # ワークシートボックスも拡大
+    parent.grid_columnconfigure(1, weight=1)  # メニューとテキストエリアの列も拡大
 
 def open_file():
+    """ファイルを開く処理"""
     filepath = filedialog.askopenfilename(
-        filetypes=[
-            ("Excel Files", "*.xlsx"),
-            (".csv Files", "*.csv"),
-            ("All Files", "*.*"),
-        ]
+        filetypes=[("Excel Files", "*.xlsx"), (".csv Files", "*.csv"), ("All Files", "*.*")]
     )
     if not filepath:
         return
 
-    extension = filepath.split(".")[-1]
     try:
         convert.open_file(filepath)
+        extension = filepath.split(".")[-1]
+        if extension == "csv":
+            display_csv_sheet()
+        else:
+            display_sheet_buttons(filepath)
     except FileNotFoundError:
         show_status_message(f"File '{filepath}' not found.", error=True)
-        return
-
-    match extension:
-        case "csv":
-            display_csv_sheet()
-        case "xlsx":
-            display_sheet_buttons(filepath)
-
 
 def display_csv_sheet():
-    for widget in button_frame.winfo_children():
-        widget.destroy()
+    """CSVファイルの内容を表示"""
+    clear_buttons()
     latex_code = convert.convert_to_latex("CSV")
     update_output_and_copy(latex_code, "CSV file opened and copied successfully.")
 
-
-def display_sheet_buttons(filepath: str):
-    for widget in button_frame.winfo_children():
-        widget.destroy()
-
+def display_sheet_buttons(filepath):
+    """Excelの各シートのボタンを表示"""
+    clear_buttons()
     sheet_names = convert.sheet_names
-    for i, sheet in enumerate(sheet_names):
-        button = tk.Button(
-            button_frame,
-            text=sheet,
-            command=lambda s=sheet: display_excel_sheet(filepath, s),
-        )
-        button.grid(row=0, column=i, padx=5, pady=5)
+    max_columns = 7
 
-    # 最初のシートを自動的に表示
+    for index, sheet in enumerate(sheet_names):
+        row, col = divmod(index, max_columns)
+        tk.Button(
+            worksheet_box,
+            text=sheet,
+            command=lambda s=sheet: display_excel_sheet(filepath, s)
+        ).grid(row=row, column=col, padx=5, pady=5)
+
     display_excel_sheet(filepath, sheet_names[0])
 
-
-def display_excel_sheet(filepath: str, sheet_name: str):
+def display_excel_sheet(filepath, sheet_name):
+    """選択されたシートの内容を表示"""
     latex_code = convert.convert_to_latex(sheet_name)
     update_output_and_copy(latex_code, f"Sheet '{sheet_name}' copied successfully.")
 
-
-def update_output_and_copy(latex_code: str, message: str):
+def update_output_and_copy(latex_code, message):
+    """出力エリアの更新とクリップボードへのコピー"""
     output_text.delete(1.0, tk.END)
     output_text.insert(tk.END, latex_code)
     copy_to_clipboard(latex_code)
     show_status_message(message)
 
-
-def copy_to_clipboard(text: str):
-    """OSに応じたクリップボード操作を実行"""
+def copy_to_clipboard(text):
+    """クリップボードにコピー"""
     try:
-        if platform.system() == "Darwin":  # MacOSの場合
+        if platform.system() == "Darwin":
             from AppKit import NSPasteboard, NSStringPboardType
-
             pb = NSPasteboard.generalPasteboard()
             pb.clearContents()
             pb.setString_forType_(text, NSStringPboardType)
-        elif platform.system() == "Linux":  # Linuxの場合
-            process = subprocess.Popen(
-                ["xclip", "-selection", "clipboard"],
-                stdin=subprocess.PIPE,
-                close_fds=True,
-            )
-            process.communicate(text.encode("utf-8"))
-        elif platform.system() == "Windows":
-            process = subprocess.Popen(
-                ["clip"], stdin=subprocess.PIPE, close_fds=True
-            )
-            process.communicate(text.encode("utf-8"))
+        elif platform.system() == "Linux":
+            subprocess.run(["xclip", "-selection", "clipboard"], input=text.encode(), check=True)
+        else:
+            subprocess.run(["clip"], input=text.encode(), check=True)
     except Exception as e:
         print(f"Failed to copy to clipboard: {e}")
 
-
-def show_status_message(message: str, error: bool = False):
+def show_status_message(message, error=False):
+    """ステータスラベルの更新"""
     status_label.config(text=message, fg="red" if error else "green")
     root.after(5000, lambda: status_label.config(text=""))
+
+def clear_buttons():
+    """ボタンフレーム内のボタンをクリア"""
+    for widget in worksheet_box.winfo_children():
+        widget.destroy()
+
+if __name__ == "__main__":
+    launch_gui()
