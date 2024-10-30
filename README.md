@@ -1,2 +1,43 @@
-# TexTable
-A simple library to convert csv and excel to LaTex's table
+# TexTable <!-- omit in toc -->  
+- [インストール](#インストール)
+  - [ビルド済みのバイナリを使用する場合](#ビルド済みのバイナリを使用する場合)
+  - [ソースコードからビルドする場合](#ソースコードからビルドする場合)
+    - [依存関係のインストール](#依存関係のインストール)
+    - [ビルド](#ビルド)
+- [使い方](#使い方)
+  - [Macの場合](#macの場合)
+
+TexTableは、CSVおよびExcelファイルをLaTeXの表に変換するためのシンプルなライブラリです。
+
+# インストール
+## ビルド済みのバイナリを使用する場合
+ビルドされたものは[releases](https://github.com/tetsugo02/TexTable/releases)を参照してください。
+
+## ソースコードからビルドする場合
+### 依存関係のインストール
+
+`requirements_Mac.txt`または`requirement_Linux.txt`を使用して、依存関係をインストールします。
+
+```sh
+# Macの場合
+pip install -r  requirements_Mac.txt
+
+# Linuxの場合
+pip install -r  requirements_Linux.txt
+```
+### ビルド
+[`build.py`](./build.py)を実行してください。
+  
+  ```sh
+  python build.py
+  ```
+
+# 使い方
+## Macの場合
+ビルドされた`TexTable`をクリックして起動します。すると、以下のようなウィンドウが表示されます。
+<img src="./Resources/main_scene.png">
+`Open File`ボタンをクリックして、.xlsxまたは.csvファイルを選択します。選択すると、ワークシートが変換され、LaTeXの表が表示されます。同時に、<b>クリップボードにコピーされます。</b>
+
+xlsxファイルの場合、work sheetを選択することができます。
+<img src="./Resources/main_scene2.png">
+
