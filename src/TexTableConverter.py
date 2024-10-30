@@ -87,7 +87,7 @@ class TexTableConverter:
         latex_code = self._generate_latex_table(data)
         return latex_code
 
-    def _generate_latex_table(self, data: list, format: str = "horizontal") -> str:
+    def _generate_latex_table(self, data: list, format: str = "vertical") -> str:
         table = []
         table.append(
             "\\begin{table}[H]\n"
@@ -114,6 +114,21 @@ class TexTableConverter:
                 table.append("  \\end{tabular}")
 
             case "vertical":
-                pass  # TODO これから実装
+                for i, row in enumerate(data):
+                    if i ==0:
+                        table.append("   " + "\\begin{tabular}{|"+ "c|"*len(row) + "}")
+                        table.append("   " + "\\toprule")
+                        table.append(
+                            "   " + " & ".join(str(cell) for cell in row) + " \\\\"
+                            )
+                        table.append("   " + "\\midrule")
+                    else:
+                        table.append(
+                            "     " + " & ".join(str(cell) for cell in row) + " \\\\"
+                        )
+                        table.append("   "+ "\\midrule")
+                table.append("  \\bottomrule")
+                table.append("  \\end{tabular}")
+                        
         table.append("\\end{table}")
         return "\n".join(table)
