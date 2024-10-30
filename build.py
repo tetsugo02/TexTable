@@ -25,21 +25,23 @@ def build_command():
         script_path,  # ビルド対象のスクリプト
     ]
 
-    # プラットフォームごとのオプションを追加
+    # OSごとの設定
     system = platform.system()
     if system == "Darwin":  # macOS
         icon_path = os.path.join(os.path.dirname(__file__), "public/icon.icns")
         base_command.extend(
             [
                 "--macos-create-app-bundle",  # macOS向けのAppバンドル
-                f"--macos-app-icon={icon_path}",  # アイコンの指定
+                f"--macos-app-icon={icon_path}", 
             ]
         )
     elif system == "Windows":  # Windows
         icon_path = os.path.join(os.path.dirname(__file__), "public/icon.ico")
         base_command.extend(
-            [
-                "--enable-plugin=tk-inter",  # tkinterのプラグインを有効化
+            [   
+                "--windows-disable-console",
+                "--onefile",  
+                "--enable-plugin=tk-inter", 
             ]
         )
     elif system == "Linux":  # Linux
@@ -56,7 +58,6 @@ def main():
         print("Running build command:")
         print(" ".join(command))
 
-        # Nuitkaのビルドコマンドを実行
         result = subprocess.run(command, check=True)
         print("Build completed successfully!")
     except subprocess.CalledProcessError as e:
