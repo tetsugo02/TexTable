@@ -8,6 +8,7 @@
 - [使い方](#使い方)
   - [Mac の場合](#mac-の場合)
   - [Linux の場合](#linux-の場合)
+  - [Windows の場合](#windows-の場合)
 
 TexTable は、CSV および Excel ファイルを LaTeX の表に変換するためのシンプルなライブラリです。
 
@@ -57,3 +58,7 @@ xlsx ファイルの場合、work sheet を選択することができます。
 ```sh
 ./TexTable.bin
 ```
+
+## Windows の場合
+
+ビルドされた`TexTalbe.exe`をダブルクリックして起動します。
