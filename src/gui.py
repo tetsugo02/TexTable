@@ -30,13 +30,14 @@ class LaTeXTableConverterApp:
         button_frame = tk.Frame(self.root_frame)
         button_frame.grid(row=0, column=0, columnspan=2, pady=5)
 
-        tk.Button(button_frame, text="Open File", command=self.open_file).grid(
-            row=0, column=0, padx=5
-        )
+        tk.Button(
+            button_frame, text="Open File", command=self.open_file, width=20, height=2
+        ).grid(row=0, column=0, padx=5)
         tk.Button(
             button_frame,
             text="Copy to Clipboard",
             command=lambda: copy_to_clipboard(self.output_text.get(1.0, tk.END)),
+            height=2,
         ).grid(row=0, column=1, padx=5)
 
         tk.Label(self.root_frame, text="Select Format:").grid(
