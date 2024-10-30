@@ -32,16 +32,16 @@ def build_command():
         base_command.extend(
             [
                 "--macos-create-app-bundle",  # macOS向けのAppバンドル
-                f"--macos-app-icon={icon_path}", 
+                f"--macos-app-icon={icon_path}",
             ]
         )
     elif system == "Windows":  # Windows
         icon_path = os.path.join(os.path.dirname(__file__), "public/icon.ico")
         base_command.extend(
-            [   
+            [
                 "--windows-disable-console",
-                "--onefile",  
-                "--enable-plugin=tk-inter", 
+                "--onefile",
+                "--enable-plugin=tk-inter",
             ]
         )
     elif system == "Linux":  # Linux
