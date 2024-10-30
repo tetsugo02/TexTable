@@ -115,6 +115,10 @@ def copy_to_clipboard(text: str):
                 stdin=subprocess.PIPE,
                 close_fds=True,
             )
+        elif platform.system() == "Windows":
+            process = subprocess.Popen(
+                ["clip"], stdin=subprocess.PIPE, close_fds=True
+            )
             process.communicate(text.encode("utf-8"))
     except Exception as e:
         print(f"Failed to copy to clipboard: {e}")
