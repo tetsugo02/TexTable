@@ -8,7 +8,7 @@ convert = TexTableConverter()
 
 def launch_gui() -> None:
     """GUIのメインウィンドウを起動"""
-    global root, output_text, status_label, worksheet_box, button_frame
+    global root, button_frame, table_format
 
     root = tk.Tk()
     root.title("LaTeX Table Converter")
@@ -55,6 +55,20 @@ def create_menu_buttons(parent):
     )
     format_menu.set("horizontal")
     format_menu.grid(row=1, column=1, sticky="ew", padx=5, pady=5)
+    format_menu.bind("<<ComboboxSelected>>", update_table_format)
+
+
+def update_table_format(event):
+    """テーブルの表示形式を更新"""
+    table_format = event.widget.get()
+    convert.set_table_format(table_format)
+    file_type = convert.file_type
+    latex_code = ""
+    if file_type == "csv":
+        latex_code = convert.convert_to_latex("CSV")
+    else:
+        latex_code = convert.convert_to_latex(convert.sheet_names[0])
+    update_output_and_copy(latex_code, f"Table format set to '{table_format}'.")
 
 
 def create_output_area(parent):
@@ -105,13 +119,6 @@ def open_file():
         show_status_message(f"File '{filepath}' not found.", error=True)
 
 
-def display_csv_sheet():
-    """CSVファイルの内容を表示"""
-    clear_buttons()
-    latex_code = convert.convert_to_latex("CSV")
-    update_output_and_copy(latex_code, "CSV file opened and copied successfully.")
-
-
 def display_sheet_buttons(filepath):
     """Excelの各シートのボタンを表示"""
     clear_buttons()
@@ -123,13 +130,20 @@ def display_sheet_buttons(filepath):
         tk.Button(
             worksheet_box,
             text=sheet,
-            command=lambda s=sheet: display_excel_sheet(filepath, s),
+            command=lambda s=sheet: display_excel_sheet(s),
         ).grid(row=row, column=col, padx=5, pady=5)
 
-    display_excel_sheet(filepath, sheet_names[0])
+    display_excel_sheet(sheet_names[0])
 
 
-def display_excel_sheet(filepath, sheet_name):
+def display_csv_sheet():
+    """CSVファイルの内容を表示"""
+    clear_buttons()
+    latex_code = convert.convert_to_latex("CSV")
+    update_output_and_copy(latex_code, "CSV file opened and copied successfully.")
+
+
+def display_excel_sheet(sheet_name):
     """選択されたシートの内容を表示"""
     latex_code = convert.convert_to_latex(sheet_name)
     update_output_and_copy(latex_code, f"Sheet '{sheet_name}' copied successfully.")

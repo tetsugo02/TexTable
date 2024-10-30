@@ -10,6 +10,7 @@ class TexTableConverter:
         self.file_datas: dict[str, list] = {}  # シートごとのデータを格納
         self.sheet_names: list[str] = []
         self.file_type: str = None
+        self.table_format: str = "horizontal"
 
     def open_file(self, file_path: str) -> None:
 
@@ -84,8 +85,14 @@ class TexTableConverter:
 
     def convert_to_latex(self, sheet_name: str) -> str:
         data = self.get_sheet_data(sheet_name)
-        latex_code = self._generate_latex_table(data)
+        latex_code = self._generate_latex_table(data, self.table_format)
         return latex_code
+
+    def set_table_format(self, format: str) -> None:
+        if format in ["horizontal", "vertical"]:
+            self.table_format = format
+        else:
+            raise ValueError("Table format must be 'horizontal' or 'vertical'.")
 
     def _generate_latex_table(self, data: list, format: str = "horizontal") -> str:
         table = []
@@ -115,20 +122,22 @@ class TexTableConverter:
 
             case "vertical":
                 for i, row in enumerate(data):
-                    if i ==0:
-                        table.append("   " + "\\begin{tabular}{|"+ "c|"*len(row) + "}")
+                    if i == 0:
+                        table.append(
+                            "   " + "\\begin{tabular}{|" + "c|" * len(row) + "}"
+                        )
                         table.append("   " + "\\toprule")
                         table.append(
                             "   " + " & ".join(str(cell) for cell in row) + " \\\\"
-                            )
+                        )
                         table.append("   " + "\\midrule")
                     else:
                         table.append(
                             "     " + " & ".join(str(cell) for cell in row) + " \\\\"
                         )
-                        table.append("   "+ "\\midrule")
+                        table.append("   " + "\\midrule")
                 table.append("  \\bottomrule")
                 table.append("  \\end{tabular}")
-                        
+
         table.append("\\end{table}")
         return "\n".join(table)
