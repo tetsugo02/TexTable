@@ -107,17 +107,25 @@ class TexTableConverter:
                 for i, row in enumerate(data):
                     if i == 0:
                         table.append("   " + "\\begin{tabular}{" + "c" * len(row) + "}")
-                        table.append("   " + "\\toprule")
+                        table.append("   " + "\\hline")
                         table.append(
-                            "   " + " & ".join(str(cell) for cell in row) + " \\\\"
+                            "   "
+                            + " & ".join(
+                                check_and_replace_null(str(cell)) for cell in row
+                            )
+                            + " \\\\"
                         )
-                        table.append("   " + "\\midrule")
+                        table.append("   " + "\\hline")
                     else:
                         table.append(
-                            "     " + " & ".join(str(cell) for cell in row) + " \\\\"
+                            "     "
+                            + " & ".join(
+                                check_and_replace_null(str(cell)) for cell in row
+                            )
+                            + " \\\\"
                         )
 
-                table.append("  \\bottomrule")
+                table.append("  \\hline")
                 table.append("  \\end{tabular}")
 
             case "vertical":
@@ -126,18 +134,31 @@ class TexTableConverter:
                         table.append(
                             "   " + "\\begin{tabular}{|" + "c|" * len(row) + "}"
                         )
-                        table.append("   " + "\\toprule")
+                        table.append("   " + "\\hline")
                         table.append(
-                            "   " + " & ".join(str(cell) for cell in row) + " \\\\"
+                            "   "
+                            + " & ".join(
+                                check_and_replace_null(str(cell)) for cell in row
+                            )
+                            + " \\\\"
                         )
-                        table.append("   " + "\\midrule")
                     else:
+                        table.append("   \\hline")
                         table.append(
-                            "     " + " & ".join(str(cell) for cell in row) + " \\\\"
+                            "     "
+                            + " & ".join(
+                                check_and_replace_null(str(cell)) for cell in row
+                            )
+                            + " \\\\"
                         )
-                        table.append("   " + "\\midrule")
-                table.append("  \\bottomrule")
+                table.append("  \\hline")
                 table.append("  \\end{tabular}")
 
         table.append("\\end{table}")
         return "\n".join(table)
+
+
+def check_and_replace_null(str: str) -> str:
+    if str == "":
+        return "~"
+    return str
