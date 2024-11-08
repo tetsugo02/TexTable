@@ -45,11 +45,11 @@ python build.py
 ## Mac の場合
 
 ビルドされた`TexTable`をクリックして起動します。すると、以下のようなウィンドウが表示されます。
-<img src="./Resources/main_scene.png">
+<img src="./Resources/mainscene.png">
 `Open File`ボタンをクリックして、.xlsx または.csv ファイルを選択します。選択すると、ワークシートが変換され、LaTeX の表が表示されます。同時に、<b>クリップボードに自動的にコピーされます。</b>
 
 xlsx ファイルの場合、work sheet を選択することができます。
-<img src="./Resources/main_scene2.png">
+<img src="./Resources/mainscene2.png">
 
 ## Linux の場合
 
