@@ -49,7 +49,7 @@ python build.py
 `Open File`ボタンをクリックして、.xlsx または.csv ファイルを選択します。選択すると、ワークシートが変換され、LaTeX の表が表示されます。同時に、<b>クリップボードに自動的にコピーされます。</b>
 
 xlsx ファイルの場合、work sheet を選択することができます。
-<img src="./Resources/mainscene2.png">
+<img src="./Resources/mainscene1.png">
 
 ## Linux の場合
 
